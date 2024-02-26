@@ -1,9 +1,10 @@
+import validators
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QUrl
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QLineEdit, QAction
-from constants.strings import *
+from constants.strings import AppStringConstants as Asc
 
 
 class Ui_MainWindow(object):
@@ -23,7 +24,7 @@ class Ui_MainWindow(object):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1046, 640)
         self.browser = QWebEngineView()
-        self.browser.setUrl(QUrl(mainUrl))
+        self.browser.setUrl(QUrl(Asc.mainUrl))
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralWidget")
         MainWindow.setCentralWidget(self.browser)
@@ -37,21 +38,21 @@ class Ui_MainWindow(object):
         self.actionBack = QtWidgets.QAction(MainWindow)
         self.actionBack.triggered.connect(self.browser.back)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(backIcon), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(Asc.backIcon), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionBack.setIcon(icon)
         self.actionBack.setObjectName("actionBack")
 
         self.actionForward = QtWidgets.QAction(MainWindow)
         self.actionForward.triggered.connect(self.browser.forward)
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(forwardIcon), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap(Asc.forwardIcon), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionForward.setIcon(icon1)
         self.actionForward.setObjectName("actionForward")
 
         self.actionReload = QtWidgets.QAction(MainWindow)
         self.actionReload.triggered.connect(self.browser.reload)
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap(reloadIcon), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon2.addPixmap(QtGui.QPixmap(Asc.reloadIcon), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionReload.setIcon(icon2)
         self.actionReload.setObjectName("actionReload")
 
@@ -65,21 +66,21 @@ class Ui_MainWindow(object):
         self.browser.urlChanged.connect(self.update_url)
 
         icon3 = QtGui.QIcon()
-        icon3.addPixmap(QtGui.QPixmap(homeIcon), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon3.addPixmap(QtGui.QPixmap(Asc.homeIcon), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionHome.setIcon(icon3)
         self.actionHome.setObjectName("actionHome")
 
         self.actionStop = QAction(MainWindow)
         self.actionStop.triggered.connect(self.browser.stop)
         icon4 = QtGui.QIcon()
-        icon4.addPixmap(QtGui.QPixmap(stopIcon), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon4.addPixmap(QtGui.QPixmap(Asc.stopIcon), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionStop.setIcon(icon4)
         self.actionStop.setObjectName("actionStop")
 
         self.actionMenu = QAction(MainWindow)
         self.actionMenu.triggered.connect(self.print_page)
         icon5 = QtGui.QIcon()
-        icon5.addPixmap(QtGui.QPixmap(menuIcon), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon5.addPixmap(QtGui.QPixmap(Asc.menuIcon), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionMenu.setIcon((icon5))
         self.actionMenu.setObjectName("actionMenu")
 
@@ -99,17 +100,20 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def navigate_home(self):
-        self.browser.setUrl(QUrl(mainUrl))
+        self.browser.setUrl(QUrl(Asc.mainUrl))
 
     def navigate_to_url(self):
         url = self.actionUrlBar.text()
-        self.browser.setUrl(QUrl(url))
+        if validators.url(f"https://{url}"):
+            self.browser.setUrl(QUrl(f"https://{url}"))
+        else:
+            self.browser.setUrl(QUrl(f"{Asc.googleMainUrl}/search?q={url.replace(" ", "+")}"))
 
     def update_url(self, q):
         self.actionUrlBar.setText(q.toString())
 
     def print_page(self):
-        self.browser.page().printToPdf(pagePath)
+        self.browser.page().printToPdf(Asc.pagePath)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -133,10 +137,10 @@ if __name__ == "__main__":
     import sys
 
     app = QtWidgets.QApplication(sys.argv)
-    app.setWindowIcon(QIcon(appIcon))
-    app.setApplicationName(appName)
+    app.setWindowIcon(QIcon(Asc.appIcon))
+    app.setApplicationName(Asc.appName)
     MainWindow = QtWidgets.QMainWindow()
-    MainWindow.setStyleSheet(open(style, "r").read())
+    MainWindow.setStyleSheet(open(Asc.style, "r").read())
     MainWindow.setWindowOpacity(0.95)
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
